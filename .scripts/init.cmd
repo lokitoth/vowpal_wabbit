@@ -5,14 +5,16 @@ IF NOT DEFINED nugetPath (
 
 IF NOT DEFINED msbuildPath (
     REM Try to find VS Install
-    for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
-        set InstallDir=%%i
+    FOR /f "usebackq tokens=*" %%i IN (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) DO (
+        SET "InstallDir=%%i"
     )
 
-    if not exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
-        echo ERROR: MsBuild couldn't be found
-        exit /b 1
-    ) else (
+    ECHO !InstallDir!
+
+    IF NOT EXIST "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
+        ECHO ERROR: MsBuild couldn't be found
+        EXIT /b 1
+    ) ELSE (
         SET "msBuildPath=%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe"
     )
 )
