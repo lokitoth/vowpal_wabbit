@@ -7,10 +7,10 @@ pool:
 
 steps:
 - script: |
-    .scripts/restore.cmd
-    .scripts/build.cmd
-    .scripts/test.cmd
-    .scripts/package.cmd
+    CALL .scripts/restore.cmd
+    CALL .scripts/build.cmd
+    CALL .scripts/test.cmd
+    CALL .scripts/package.cmd
   env:
     Tag: +$(Build.SourceVersion)
     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
