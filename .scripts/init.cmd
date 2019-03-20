@@ -9,7 +9,7 @@ IF NOT DEFINED msbuildPath (
         SET "InstallDir=%%i"
     )
 
-    ECHO !InstallDir!
+    ECHO %InstallDir%
 
     IF NOT EXIST "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
         ECHO ERROR: MsBuild couldn't be found
