@@ -7,9 +7,9 @@ IF NOT DEFINED msbuildPath (
     SET msbuildPath=msbuild
 )
 
-IF NOT DEFINED vstestPath {
+IF NOT DEFINED vstestPath (
     SET vstestPath=vstest.console
-}
+)
 
 REM Repo-specific paths
 IF NOT DEFINED vwRoot (
