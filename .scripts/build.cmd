@@ -18,8 +18,8 @@ REM "win32\make_config_h.exe"
 
 REM POPD
 
-ECHO Building "%vwRoot%\vowpalwabbit\vw_fix.sln" for Release x64
-"%msbuildPath%" "%vwRoot%\vowpalwabbit\vw_fix.sln" /nr:false /v:normal /m /p:Configuration=Release;Platform=x64
+ECHO Building "%vwRoot%\vowpalwabbit\vw.sln" for Release x64
+"%msbuildPath%" "%vwRoot%\vowpalwabbit\vw.sln" /nr:false /v:normal /m /p:Configuration=Release /p:Platform=x64
 
 POPD
 
