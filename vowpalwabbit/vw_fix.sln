@@ -4,6 +4,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vw_core", "vw_core.vcxproj", "{1E205806-7F80-47DD-A38D-FC08083F3593}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvw", "libvw.vcxproj", "{EA52DE0D-A5BE-4FB9-8C84-3A57BDFEBED9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -14,6 +16,10 @@ Global
 		{1E205806-7F80-47DD-A38D-FC08083F3593}.Debug|x64.Build.0 = Debug|x64
 		{1E205806-7F80-47DD-A38D-FC08083F3593}.Release|x64.ActiveCfg = Release|x64
 		{1E205806-7F80-47DD-A38D-FC08083F3593}.Release|x64.Build.0 = Release|x64
+		{EA52DE0D-A5BE-4FB9-8C84-3A57BDFEBED9}.Debug|x64.ActiveCfg = Debug|x64
+		{EA52DE0D-A5BE-4FB9-8C84-3A57BDFEBED9}.Debug|x64.Build.0 = Debug|x64
+		{EA52DE0D-A5BE-4FB9-8C84-3A57BDFEBED9}.Release|x64.ActiveCfg = Release|x64
+		{EA52DE0D-A5BE-4FB9-8C84-3A57BDFEBED9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {14CFCE53-7467-4021-BD9A-978C2FC5BCC8}
