@@ -15,11 +15,28 @@ steps:
     #username: # Optional
     #password: # Optional
     #netShare: # Required when packageFeedSelector == NetShare
-- script: |
-    CALL .scripts/restore.cmd
-    CALL .scripts/build.cmd
-    CALL .scripts/test.cmd
-    CALL .scripts/package.cmd
+- script: CALL .scripts/restore.cmd
+  displayName: 'Restore dependencies'
+  env:
+    Tag: +$(Build.SourceVersion)
+    nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
+  failOnStderr: true
+- script: CALL .scripts/build.cmd
+  displayName: 'Build vw.sln'
+  env:
+    Tag: +$(Build.SourceVersion)
+    nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
+    DebugBuildScripts: 1
+  failOnStderr: true
+- script: CALL .scripts/test.cmd
+  displayName: 'Run tests'
+  env:
+    Tag: +$(Build.SourceVersion)
+    nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
+    DebugBuildScripts: 1
+  failOnStderr: false
+- script: CALL .scripts/package.cmd
+  displayName: 'Package artifacts'
   env:
     Tag: +$(Build.SourceVersion)
     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
