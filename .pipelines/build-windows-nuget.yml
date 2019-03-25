@@ -28,17 +28,17 @@ steps:
     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
     DebugBuildScripts: 1
   failOnStderr: true
-- script: CALL .scripts/test.cmd
-  displayName: 'Run tests'
-  env:
-    Tag: +$(Build.SourceVersion)
-    nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
-    DebugBuildScripts: 1
-  failOnStderr: false
-- script: CALL .scripts/package.cmd
-  displayName: 'Package artifacts'
-  env:
-    Tag: +$(Build.SourceVersion)
-    nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
-    DebugBuildScripts: 1
-  failOnStderr: true
+# - script: CALL .scripts/test.cmd
+#   displayName: 'Run tests'
+#   env:
+#     Tag: +$(Build.SourceVersion)
+#     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
+#     DebugBuildScripts: 1
+#   failOnStderr: false
+# - script: CALL .scripts/package.cmd
+#   displayName: 'Package artifacts'
+#   env:
+#     Tag: +$(Build.SourceVersion)
+#     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
+#     DebugBuildScripts: 1
+#   failOnStderr: true
