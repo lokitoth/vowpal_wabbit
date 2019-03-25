@@ -8,15 +8,7 @@ IF NOT DEFINED msbuildPath (
     FOR /f "usebackq tokens=*" %%i IN (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) DO (
         SET "InstallDir=%%i"
     )
-
-    SET
 )
-
-ECHO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-ECHO !!!!!
-ECHO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-SET
 
 IF NOT DEFINED msbuildPath (
     IF NOT EXIST "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
