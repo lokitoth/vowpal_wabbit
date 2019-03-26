@@ -7,6 +7,8 @@ SETLOCAL
 
 CALL %~dp0init.cmd
 
+PUSHD %~dp0..
+
 SET RootRelativeOutputDirX64=%vwRoot%\vowpalwabbit\out\target\
 SET RootRelativeOutputDirAnyCPU=%vwRoot%\vowpalwabbit\out\target\
 SET SolutionDir=%vwRoot%\vowpalwabbit\
@@ -20,5 +22,7 @@ REM TODO-pre-checkin: Figure out how to parametrize this script?! (is there a st
 "%nugetPath%" pack %SolutionDir%..\cs\cs_parallel\cs_parallel.nuspec -OutputDirectory "%SolutionDir%out\target\x64\Release" -Verbosity detailed -BasePath "." -Properties "RootRelativeOutputDirX64=%RootRelativeOutputDirX64%;RootRelativeOutputDirAnyCPU=%RootRelativeOutputDirAnyCPU%;Configuration=Release;Platform=X64;version=%Version%;Tag=%Tag%;RepoRoot=%RepoRoot%;SolutionDir=%SolutionDir%"
 
 REM TODO: Need to also include the .pdb files, once we fix all the GitLink warnings
+
+POPD
 
 ENDLOCAL
