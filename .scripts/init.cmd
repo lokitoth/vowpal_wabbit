@@ -4,22 +4,30 @@ IF NOT DEFINED nugetPath (
 )
 
 IF NOT DEFINED msbuildPath (
-    REM Try to find VS Install
-    FOR /f "usebackq tokens=*" %%i IN (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) DO (
-        SET "InstallDir=%%i"
-    )
+    CALL %~dp0find-vs2017.cmd
+)
+
+IF NOT DEFINED vstestPath (
+    CALL %~dp0find-vs2017.cmd
 )
 
 IF NOT DEFINED msbuildPath (
-    IF NOT EXIST "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
+    IF NOT EXIST "%VsInstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
         ECHO ERROR: MsBuild couldn't be found
         EXIT /b 1
     ) ELSE (
-        SET "msBuildPath=%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe"
+        SET "msBuildPath=%VsInstallDir%\MSBuild\15.0\Bin\MSBuild.exe"
     )
 )
 
 IF NOT DEFINED vstestPath (
+    IF NOT EXIST "%VsInstallDir%\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" (
+        ECHO ERROR: vstest.console couldn't be found
+        EXIT /b 1
+    ) ELSE (
+        SET "vstestPath=%VsInstallDir%\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+    )
+
     SET vstestPath=vstest.console
 )
 
