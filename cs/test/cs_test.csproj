@@ -30,8 +30,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\vowpalwabbit\</SolutionDir>
-    <OutputPath>$(SolutionDir)out\target\$(Configuration)\$(PlatformShortName)\</OutputPath>
-    <IntermediateOutputPath>$(SolutionDir)out\int\$(Configuration)\$(PlatformShortName)\$(ProjectName)\</IntermediateOutputPath>
+    <OutputPath>$(SolutionDir)out\target\$(Configuration)\x64\</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)out\int\$(Configuration)\x64\$(ProjectName)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -190,7 +190,7 @@
   <PropertyGroup>
     <!-- Not needed, because TragetDir is the same for all projects. However, keeping this here, in case
          it changes in the future -->
-    <!-- <PostBuildEvent>xcopy /y/d $(SolutionDir)out\target\$(Configuration)\$(PlatformShortName)\libvw.* $(TargetDir)</PostBuildEvent-->
+    <!-- <PostBuildEvent>xcopy /y/d $(SolutionDir)out\target\$(Configuration)\x64\libvw.* $(TargetDir)</PostBuildEvent-->
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
