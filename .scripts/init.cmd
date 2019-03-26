@@ -27,8 +27,6 @@ IF NOT DEFINED vstestPath (
     ) ELSE (
         SET "vstestPath=%VsInstallDir%\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
     )
-
-    SET vstestPath=vstest.console
 )
 
 REM Repo-specific paths
