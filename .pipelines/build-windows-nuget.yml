@@ -30,14 +30,14 @@ steps:
   env:
     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
   failOnStderr: false
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '**/vowpalwabbit/out/test/Release/x64/*.trx'
 - script: CALL .scripts/package.cmd
   displayName: 'Package artifacts'
   env:
     Tag: +$(Build.SourceVersion)
     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
   failOnStderr: true
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  inputs:
-    testResultsFormat: VSTest
-    testResultsFiles: '**/vowpalwabbit/out/test/Release/x64/*.trx'
