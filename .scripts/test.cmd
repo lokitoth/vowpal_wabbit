@@ -12,7 +12,6 @@ ECHO Running VW C Smoke test
 "%vwRoot%\vowpalwabbit\out\target\Release\x64\c_test.exe"
 
 IF "%ERRORLEVEL%" NEQ "0" (
-    ECHO WTF?!
     ENDLOCAL
     EXIT /B %ERRORLEVEL%
 )
