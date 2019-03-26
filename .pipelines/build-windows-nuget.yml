@@ -41,3 +41,13 @@ steps:
     Tag: +$(Build.SourceVersion)
     nugetPath: $(Build.SourcesDirectory)\vowpalwabbit\.nuget\nuget.exe
   failOnStderr: true
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: target'
+  inputs:
+    PathtoPublish: $(Build.SourcesDirectory)\vowpalwabbit\out\target
+  condition: succeededOrFailed()
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: package'
+  inputs:
+    PathtoPublish: $(Build.SourcesDirectory)\vowpalwabbit\out\package
+  condition: succeededOrFailed()
