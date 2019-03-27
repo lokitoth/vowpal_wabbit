@@ -45,9 +45,11 @@ steps:
   displayName: 'Publish Artifact: target'
   inputs:
     PathtoPublish: $(Build.SourcesDirectory)\vowpalwabbit\out\target
+    ArtifactName: target
   condition: succeededOrFailed()
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: package'
   inputs:
     PathtoPublish: $(Build.SourcesDirectory)\vowpalwabbit\out\package
+    ArtifactName: package
   condition: succeededOrFailed()
