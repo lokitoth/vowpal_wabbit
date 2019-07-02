@@ -1446,6 +1446,7 @@ bool parse_line_json(vw* all, char* line, size_t num_chars, v_array<example*>& e
   return true;
 }
 
+template <bool audit>
 inline void prepare_for_learner(vw* all, v_array<example*>& examples)
 {
   // note: the json parser does single pass parsing and cannot determine if a shared example is needed.
@@ -1459,6 +1460,7 @@ inline void prepare_for_learner(vw* all, v_array<example*>& examples)
     example& ae = VW::get_unused_example(all);
     char empty = '\0';
     substring example = {&empty, &empty};
+
     substring_to_example(all, &ae, example);
 
     examples.push_back(&ae);
@@ -1477,7 +1479,7 @@ void line_to_examples_json(vw* all, char* line, size_t num_chars, v_array<exampl
     return;
   }
 
-  prepare_for_learner(all, examples);
+  prepare_for_learner<audit>(all, examples);
 }
 
 template <bool audit>
@@ -1501,7 +1503,7 @@ int read_features_json(vw* all, v_array<example*>& examples)
     reread = !parse_line_json<audit>(all, line, num_chars, examples);
   } while (reread);
 
-  prepare_for_learner(all, examples);
+  prepare_for_learner<audit>(all, examples);
 
   return 1;
 }

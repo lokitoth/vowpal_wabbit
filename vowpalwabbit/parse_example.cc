@@ -12,6 +12,8 @@ license as described in the file LICENSE.
 #include "global_data.h"
 #include "constant.h"
 
+#include "parse_example_backend.h"
+
 using namespace std;
 
 size_t read_features(vw* all, char*& line, size_t& num_chars)
@@ -21,7 +23,7 @@ size_t read_features(vw* all, char*& line, size_t& num_chars)
   if (num_chars_initial < 1)
     return num_chars_initial;
   num_chars = num_chars_initial;
-  if (line[0] == '\xef' && num_chars >= 3 && line[1] == '\xbb' && line[2] == '\xbf')
+  if (line[0] == '\xef' && num_chars >= 3 && line[1] == '\xbb' && line[2] == '\xbf') // Skip the UTF-8 BOM
   {
     line += 3;
     num_chars -= 3;
@@ -47,7 +49,7 @@ int read_features_string(vw* all, v_array<example*>& examples)
   return (int)num_chars_initial;
 }
 
-template <bool audit>
+template <typename parser_backend_t>
 class TC_parser
 {
  public:
@@ -55,23 +57,11 @@ class TC_parser
   char* reading_head;
   char* endLine;
   float cur_channel_v;
-  bool new_index;
-  size_t anon;
-  uint64_t channel_hash;
-  char* base;
-  unsigned char index;
   float v;
-  bool redefine_some;
-  unsigned char (*redefine)[256];
   parser* p;
-  example* ae;
-  uint64_t* affix_features;
-  bool* spelling_features;
-  v_array<char> spelling;
-  uint32_t hash_seed;
   uint64_t parse_mask;
 
-  vector<feature_dict*>* namespace_dictionaries;
+  parser_backend_t* backend;
 
   ~TC_parser() {}
 
@@ -145,126 +135,8 @@ class TC_parser
       // maybeFeature --> 'String' FeatureValue
       substring feature_name = read_name();
       v = cur_channel_v * featureValue();
-      uint64_t word_hash;
-      if (feature_name.end != feature_name.begin)
-        word_hash = (p->hasher(feature_name, channel_hash) & parse_mask);
-      else
-        word_hash = channel_hash + anon++;
-      if (v == 0)
-        return;  // dont add 0 valued features to list of features
-      features& fs = ae->feature_space[index];
-      fs.push_back(v, word_hash);
-      if (audit)
-      {
-        v_array<char> feature_v = v_init<char>();
-        push_many(feature_v, feature_name.begin, feature_name.end - feature_name.begin);
-        feature_v.push_back('\0');
-        fs.space_names.push_back(audit_strings_ptr(new audit_strings(base, feature_v.begin())));
-        feature_v.delete_v();
-      }
-      if ((affix_features[index] > 0) && (feature_name.end != feature_name.begin))
-      {
-        features& affix_fs = ae->feature_space[affix_namespace];
-        if (affix_fs.size() == 0)
-          ae->indices.push_back(affix_namespace);
-        uint64_t affix = affix_features[index];
-        while (affix > 0)
-        {
-          bool is_prefix = affix & 0x1;
-          uint64_t len = (affix >> 1) & 0x7;
-          substring affix_name = {feature_name.begin, feature_name.end};
-          if (affix_name.end > affix_name.begin + len)
-          {
-            if (is_prefix)
-              affix_name.end = affix_name.begin + len;
-            else
-              affix_name.begin = affix_name.end - len;
-          }
-          word_hash =
-              p->hasher(affix_name, (uint64_t)channel_hash) * (affix_constant + (affix & 0xF) * quadratic_constant);
-          affix_fs.push_back(v, word_hash);
-          if (audit)
-          {
-            v_array<char> affix_v = v_init<char>();
-            if (index != ' ')
-              affix_v.push_back(index);
-            affix_v.push_back(is_prefix ? '+' : '-');
-            affix_v.push_back('0' + (char)len);
-            affix_v.push_back('=');
-            push_many(affix_v, affix_name.begin, affix_name.end - affix_name.begin);
-            affix_v.push_back('\0');
-            affix_fs.space_names.push_back(audit_strings_ptr(new audit_strings("affix", affix_v.begin())));
-          }
-          affix >>= 4;
-        }
-      }
-      if (spelling_features[index])
-      {
-        features& spell_fs = ae->feature_space[spelling_namespace];
-        if (spell_fs.size() == 0)
-          ae->indices.push_back(spelling_namespace);
-        // v_array<char> spelling;
-        spelling.clear();
-        for (char* c = feature_name.begin; c != feature_name.end; ++c)
-        {
-          char d = 0;
-          if ((*c >= '0') && (*c <= '9'))
-            d = '0';
-          else if ((*c >= 'a') && (*c <= 'z'))
-            d = 'a';
-          else if ((*c >= 'A') && (*c <= 'Z'))
-            d = 'A';
-          else if (*c == '.')
-            d = '.';
-          else
-            d = '#';
-          // if ((spelling.size() == 0) || (spelling.last() != d))
-          spelling.push_back(d);
-        }
-        substring spelling_ss = {spelling.begin(), spelling.end()};
-        uint64_t word_hash = hashstring(spelling_ss, (uint64_t)channel_hash);
-        spell_fs.push_back(v, word_hash);
-        if (audit)
-        {
-          v_array<char> spelling_v = v_init<char>();
-          if (index != ' ')
-          {
-            spelling_v.push_back(index);
-            spelling_v.push_back('_');
-          }
-          push_many(spelling_v, spelling_ss.begin, spelling_ss.end - spelling_ss.begin);
-          spelling_v.push_back('\0');
-          spell_fs.space_names.push_back(audit_strings_ptr(new audit_strings("spelling", spelling_v.begin())));
-        }
-      }
-      if (namespace_dictionaries[index].size() > 0)
-      {
-        for (size_t dict = 0; dict < namespace_dictionaries[index].size(); dict++)
-        {
-          feature_dict* map = namespace_dictionaries[index][dict];
-          uint64_t hash = uniform_hash(feature_name.begin, feature_name.end - feature_name.begin, quadratic_constant);
-          features* feats = map->get(feature_name, hash);
-          if ((feats != nullptr) && (feats->values.size() > 0))
-          {
-            features& dict_fs = ae->feature_space[dictionary_namespace];
-            if (dict_fs.size() == 0)
-              ae->indices.push_back(dictionary_namespace);
-            push_many(dict_fs.values, feats->values.begin(), feats->values.size());
-            push_many(dict_fs.indicies, feats->indicies.begin(), feats->indicies.size());
-            dict_fs.sum_feat_sq += feats->sum_feat_sq;
-            if (audit)
-              for (size_t i = 0; i < feats->indicies.size(); ++i)
-              {
-                uint64_t id = feats->indicies[i];
-                stringstream ss;
-                ss << index << '_';
-                for (char* fc = feature_name.begin; fc != feature_name.end; ++fc) ss << *fc;
-                ss << '=' << id;
-                dict_fs.space_names.push_back(audit_strings_ptr(new audit_strings("dictionary", ss.str())));
-              }
-          }
-        }
-      }
+      
+      backend->emit_feature(feature_name, v);
     }
   }
 
@@ -311,22 +183,9 @@ class TC_parser
     else
     {
       // NameSpaceInfo --> 'String' NameSpaceInfoValue
-      index = (unsigned char)(*reading_head);
-      if (redefine_some)
-        index = (*redefine)[index];  // redefine index
-      if (ae->feature_space[index].size() == 0)
-        new_index = true;
       substring name = read_name();
-      if (audit)
-      {
-        v_array<char> base_v_array = v_init<char>();
-        push_many(base_v_array, name.begin, name.end - name.begin);
-        base_v_array.push_back('\0');
-        if (base != nullptr)
-          free(base);
-        base = base_v_array.begin();
-      }
-      channel_hash = p->hasher(name, this->hash_seed);
+      backend->begin_namespace(name);
+      
       nameSpaceInfoValue();
     }
   }
@@ -349,25 +208,11 @@ class TC_parser
   inline void nameSpace()
   {
     cur_channel_v = 1.0;
-    index = 0;
-    new_index = false;
-    anon = 0;
     if (*reading_head == ' ' || *reading_head == '\t' || reading_head == endLine || *reading_head == '|' ||
         *reading_head == '\r')
     {
       // NameSpace --> ListFeatures
-      index = (unsigned char)' ';
-      if (ae->feature_space[index].size() == 0)
-        new_index = true;
-      if (audit)
-      {
-        if (base != nullptr)
-          free(base);
-        base = calloc_or_throw<char>(2);
-        base[0] = ' ';
-        base[1] = '\0';
-      }
-      channel_hash = this->hash_seed == 0 ? 0 : uniform_hash("", 0, this->hash_seed);
+      backend->begin_default_namespace();
       listFeatures();
     }
     else if (*reading_head != ':')
@@ -381,8 +226,8 @@ class TC_parser
       // syntax error
       parserWarning("malformed example! '|',String,space, or EOL expected after : \"", beginLine, reading_head, "\"");
     }
-    if (new_index && ae->feature_space[index].size() > 0)
-      ae->indices.push_back(index);
+
+    backend->complete_namespace();
   }
 
   inline void listNameSpace()
@@ -399,34 +244,25 @@ class TC_parser
     }
   }
 
-  TC_parser(char* reading_head, char* endLine, vw& all, example* ae)
+  TC_parser(char* reading_head, char* endLine, parser* p, uint64_t parse_mask, parser_backend_t& backend)
   {
-    spelling = v_init<char>();
     if (endLine != reading_head)
     {
       this->beginLine = reading_head;
       this->reading_head = reading_head;
       this->endLine = endLine;
-      this->p = all.p;
-      this->redefine_some = all.redefine_some;
-      this->redefine = &all.redefine;
-      this->ae = ae;
-      this->affix_features = all.affix_features;
-      this->spelling_features = all.spelling_features;
-      this->namespace_dictionaries = all.namespace_dictionaries;
-      this->base = nullptr;
-      this->hash_seed = all.hash_seed;
-      this->parse_mask = all.parse_mask;
+      this->p = p;
+      this->parse_mask = parse_mask;
+      this->backend = &backend;
       listNameSpace();
-      if (base != nullptr)
-        free(base);
     }
   }
 };
 
-void substring_to_example(vw* all, example* ae, substring example)
+template <typename parser_backend_t>
+inline void substring_to_backend(vw* all, parser_backend_t& backend, substring example)
 {
-  all->p->lp.default_label(&ae->l);
+  all->p->lp.default_label(backend.label());
   char* bar_location = safe_index(example.begin, '|', example.end);
   char* tab_location = safe_index(example.begin, '\t', bar_location);
   substring label_space;
@@ -454,17 +290,39 @@ void substring_to_example(vw* all, example* ae, substring example)
       substring tag = all->p->words.pop();
       if (*tag.begin == '\'')
         tag.begin++;
-      push_many(ae->tag, tag.begin, tag.end - tag.begin);
+      
+      backend.push_tag(tag);
     }
   }
 
   if (all->p->words.size() > 0)
-    all->p->lp.parse_label(all->p, all->sd, &ae->l, all->p->words);
+    all->p->lp.parse_label(all->p, all->sd, backend.label(), all->p->words);
 
+  TC_parser<parser_backend_t> parser_line(bar_location, example.end, all->p, all->parse_mask, backend);
+
+  backend.complete_example();
+}
+
+template <bool audit_or_hash_inv>
+void substring_to_example(vw* all, example* ae, substring example)
+{
+  typedef VW::PARSER::example_parser_backend<audit_or_hash_inv> parser_backend_t;
+  VW::PARSER::parser_context context = VW::PARSER::init_parser_context(all);
+
+  parser_backend_t backend(ae, context);
+  substring_to_backend<parser_backend_t>(all, backend, example);
+}
+
+void substring_to_example(vw* all, example* ae, substring example)
+{
   if (all->audit || all->hash_inv)
-    TC_parser<true> parser_line(bar_location, example.end, *all, ae);
+  {
+    substring_to_example<true>(all, ae, example);
+  }
   else
-    TC_parser<false> parser_line(bar_location, example.end, *all, ae);
+  {
+    substring_to_example<false>(all, ae, example);
+  }
 }
 
 std::vector<std::string> split(char* phrase, std::string delimiter)
