@@ -17,11 +17,12 @@ set(vw_install_headers
   crossplat_compat.h parse_example.h floatbits.h global_data.h io_buf.h learner.h loss_functions.h
   parse_primitives.h parser.h simple_label.h v_array.h vw.h vwdll.h label_parser.h multiclass.h
   cost_sensitive.h cb.h v_hashmap.h memory.h vw_exception.h vw_validate.h multilabel.h constant.h
-  ezexample.h version.h
+  ezexample.h version.h parse_example_backend.h
 )
 
 set(vw_all_headers
-  ${vw_install_headers} accumulate.h options.h options_types.h options_boost_po.h
+  ${vw_install_headers} 
+  accumulate.h options.h options_types.h options_boost_po.h
   options_serializer_boost_po.h correctedMath.h rand48.h log_multi.h recall_tree.h memory_tree.h active_cover.h
   reductions.h active.h cs_active.h lrqfa.h scorer.h csoaa.h lrq.h search_dep_parser.h
   array_parameters_dense.h ect.h marginal.h search_entityrelationtask.h array_parameters.h
@@ -38,19 +39,97 @@ set(vw_all_headers
 )
 
 set(vw_all_sources
-  options_boost_po.cc options_serializer_boost_po.cc global_data.cc io_buf.cc
-  parse_regressor.cc parse_primitives.cc unique_sort.cc cache.cc rand48.cc simple_label.cc
-  multiclass.cc oaa.cc multilabel_oaa.cc boosting.cc ect.cc marginal.cc autolink.cc binary.cc lrq.cc
-  cost_sensitive.cc multilabel.cc label_dictionary.cc csoaa.cc cb.cc cb_adf.cc cb_algs.cc search.cc
-  search_meta.cc search_sequencetask.cc search_dep_parser.cc search_hooktask.cc
-  search_multiclasstask.cc search_entityrelationtask.cc search_graph.cc parse_example.cc scorer.cc
-  network.cc parse_args.cc accumulate.cc gd.cc learner.cc mwt.cc lda_core.cc gd_mf.cc mf.cc bfgs.cc
-  noop.cc print.cc example.cc parser.cc loss_functions.cc sender.cc nn.cc confidence.cc bs.cc
-  cbify.cc warm_cb.cc explore_eval.cc topk.cc stagewise_poly.cc log_multi.cc recall_tree.cc memory_tree.cc active.cc
-  active_cover.cc cs_active.cc kernel_svm.cc best_constant.cc ftrl.cc svrg.cc lrqfa.cc interact.cc
-  comp_io.cc interactions.cc vw_validate.cc audit_regressor.cc gen_cs_example.cc cb_explore.cc
-  action_score.cc cb_explore_adf.cc OjaNewton.cc baseline.cc classweight.cc
-  vw_exception.cc no_label.cc shared_feature_merger.cc conditional_contextual_bandit.cc cb_sample.cc ccb_label.cc version.cc
+  accumulate.cc 
+  action_score.cc 
+  active_cover.cc 
+  active.cc
+  audit_regressor.cc 
+  autolink.cc 
+  baseline.cc 
+  best_constant.cc 
+  bfgs.cc
+  binary.cc 
+  boosting.cc 
+  bs.cc
+  cache.cc 
+  cb_adf.cc 
+  cb_algs.cc 
+  cb_explore_adf.cc 
+  cb_explore.cc
+  cb_sample.cc 
+  cb.cc 
+  cbify.cc 
+  ccb_label.cc 
+  classweight.cc
+  comp_io.cc 
+  conditional_contextual_bandit.cc 
+  confidence.cc 
+  cost_sensitive.cc 
+  cs_active.cc 
+  csoaa.cc 
+  ect.cc 
+  example.cc 
+  explore_eval.cc 
+  ftrl.cc 
+  gd_mf.cc 
+  gd.cc 
+  gen_cs_example.cc 
+  global_data.cc 
+  interact.cc
+  interactions.cc 
+  io_buf.cc
+  kernel_svm.cc 
+  label_dictionary.cc 
+  lda_core.cc 
+  learner.cc 
+  log_multi.cc 
+  loss_functions.cc 
+  lrq.cc
+  lrqfa.cc 
+  marginal.cc 
+  memory_tree.cc 
+  mf.cc 
+  multiclass.cc 
+  multilabel_oaa.cc 
+  multilabel.cc 
+  mwt.cc 
+  network.cc 
+  nn.cc 
+  no_label.cc 
+  noop.cc 
+  oaa.cc 
+  OjaNewton.cc 
+  options_boost_po.cc 
+  options_serializer_boost_po.cc 
+  parse_args.cc 
+  parse_example.cc 
+  parse_example_json.cc
+  parse_primitives.cc 
+  parse_regressor.cc 
+  parser.cc 
+  print.cc 
+  rand48.cc 
+  recall_tree.cc 
+  scorer.cc
+  search_dep_parser.cc 
+  search_entityrelationtask.cc 
+  search_graph.cc 
+  search_hooktask.cc
+  search_meta.cc 
+  search_multiclasstask.cc 
+  search_sequencetask.cc 
+  search.cc
+  sender.cc 
+  shared_feature_merger.cc 
+  simple_label.cc
+  stagewise_poly.cc 
+  svrg.cc 
+  topk.cc 
+  unique_sort.cc 
+  version.cc
+  vw_exception.cc 
+  vw_validate.cc 
+  warm_cb.cc 
 )
 
 set(explore_all_headers
