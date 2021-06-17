@@ -100,6 +100,7 @@ class BuildPyLibVWBindingsModule(_build_ext):
             '-DBUILD_TESTS=Off',
             '-DWARNINGS=Off'
         ]
+
         if self.distribution.enable_boost_cmake is None:
             # Add this flag as default since testing indicates its safe.
             # But add a way to disable it in case it becomes a problem
@@ -165,6 +166,10 @@ class BuildPyLibVWBindingsModule(_build_ext):
                 cmake_args += ['-Ax64'] 
 
         os.chdir(str(self.build_temp))
+
+        print("!!!! spawning cmake !!!!")
+        print("cmake_args: {}".format(str(cmake_args)))
+
         self.spawn(['cmake'] + cmake_args + [str(here)])
         if not self.dry_run:
             self.spawn(['cmake', '--build', '.'] + build_args)
